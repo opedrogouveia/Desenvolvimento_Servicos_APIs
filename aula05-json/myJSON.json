@@ -1,0 +1,14 @@
+{
+    "name" : "Mary Jane" ,
+    "age" : 42 ,
+    "height" : 4.20 ,
+    "address" : null ,
+    "hasChildren" : true ,
+    "qualifications" : ["Computer Technician", "ADS"] ,
+    "yearOfGraduation" : [2020, 2023] ,
+    "spouse" : {"name" : "Peter" , "age" : 25} ,
+    "children" : [
+        {"name" : "Maria" , "age" : 4} ,
+        {"name" : "Joana" , "age" : 20}
+    ]
+}

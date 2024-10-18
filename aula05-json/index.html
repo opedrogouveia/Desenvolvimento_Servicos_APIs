@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 05 - JSON</title>
+    <script src="jquery-3.7.1.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body onload="searchProducts()">
+    <h2 >JSON</h2>
+    <button onclick="readJson()">Read JSON</button>
+    <div id="divJson"></div>
+
+    <hr>
+
+    <h2>Register Product</h2>
+    <input type="text" id="txtName" placeholder="Type the name product:">
+    <br>
+    <input type="text" id="txtPrice" placeholder="Product Price:">
+    <br><br>
+    <button id="saveButton" onclick="register()">Register</button>
+    <br><br>
+
+    <hr>
+
+    <button onclick="searchProducts()">Search Products</button>
+    <br><br>
+    <table id="tblProducts" border="1px">
+
+    </table>
+
+</body>
+</html>

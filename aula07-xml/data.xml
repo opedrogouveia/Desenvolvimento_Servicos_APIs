@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<products_list>
+    <product>
+        <id>1</id>
+        <name>Shape Element Maple</name>
+        <price>27.98</price>
+    </product>
+    <product>
+        <id>2</id>
+        <name>Grip Grizzly Bear</name>
+        <price>8.90</price>
+    </product>
+    <product>
+        <id>3</id>
+        <name>Truck Independent Hollow</name>
+        <price>38.80</price>
+        <quantity>234</quantity>
+    </product>
+</products_list>

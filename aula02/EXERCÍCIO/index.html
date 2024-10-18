@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somando Números Pares</title>
+    <script src="script.js" defer></script>
+    <script src="jquery-3.7.1.min.js"></script>
+    <style>
+        form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #result {
+            margin: 0px 10px;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST" onsubmit="return validar()">
+        <input type="text" placeholder="Digite um Número Par:" name="numero" id="numero">
+        <input type="submit" value=" + ">
+        <p id="result"></p>
+    </form>
+
+    <ul id="lista" style="list-style-type: none;">
+
+    </ul>
+    <hr>
+    <p id="total">Total: 0</p>
+
+    <hr>
+    Aula 04 - 03/09/24
+    <br><br>
+    <script>
+        person = {
+            name: "Laisi",
+            age: 30,
+            height: 1.71,
+            address: null,
+            getData: function(){
+                days = this.age * 365.25;
+                txt = "Nome: " + this.name + "<br>";
+                txt += "Age: " + this.age + "<br>";
+                txt += "Height: " + this.height + "<br>";
+                txt += "Address: " + this.address + "<br>";
+                txt += "Days Lived: " + days + "<br>";
+                return txt;
+            }
+        }
+        person.name += " da Silva";
+        person.age = 19;
+        document.write("<b>Dados da Pessoa: " + person.name + "</b><br><br>");
+        document.write(person.getData());
+    </script>
+
+    <hr>
+
+    <div id="myDiv">
+        
+    </div>
+    <button id="btChange">Change Div</button>
+
+</body>
+</html>
