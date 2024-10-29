@@ -11,27 +11,35 @@ const conn = mysql.createConnection({
     database : "store"
 })
 
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/plain");
+const server = http.createServer((req, res)=>{
+    res.statusCode = 200
+    res.setHeader("Content-Type", "text/plain")
     sql = "SELECT * FROM product ORDER BY name"
+    console.log(conn.state)
     if (conn.state != "authenticated") {
-        conn.connect(function(error) {
-            if (error) {    
-                return res.end('{"response" : "Query Error"}')
+        try {
+            conn.connect(function(error){
+                if (error) {
+                    res.end('{ "response" : "Connection Error" }')
+                }
+            })
+        } catch(error) {
+            res.end('{ "response" : "Connection Error" }')
+        }
+    }
+    try {
+        conn.query(sql, function (err, result, fields) {
+            if (err) {
+                res.end('{ "response" : "Query Error" }')
+            } else {
+                res.end(JSON.stringify(result))
             }
         })
+    } catch(error) {
+        res.end('{ "response" : "'+ error +'" }')
     }
-    
-    conn.query(sql, function (err, result, fields) {
-        if (err) {
-            return res.end('{"response" : "Query Error"}')
-        } else {
-            res.end(JSON.stringify(result))
-        }
-    })
 })
-
+    
 server.listen(port, hostname, () => {
     console.log(`Server on air in: http://${hostname}:${port}`)
 })

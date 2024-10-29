@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "knex": "^3.1.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^3.1.7",
+    "restify": "^11.1.0",
+    "restify-errors": "^8.0.2"
+  }
+}
