@@ -58,6 +58,22 @@ server.get("/pedidos", (req, res, next)=>{                 // LISTA OS PEDIDOS
         })
 })
 
+server.get("/produtos/:nomeProd", (req, res, next)=>{       // RETORNA O PRODUTO
+    const prod = req.params.nomeProd
+    knex("produtos")
+        .where("nome", prod)
+        .first()
+        .then((produto)=>{
+            if(!produto){
+                return res.send(new errors.BadRequestError("Produto não encontrado."))
+            }
+            res.send(produto)
+        }, next)
+        .catch((error)=>{
+            res.send({ error : "Erro ao buscar produto." })
+        })
+})
+
 server.get("/pedidos/:nomeCli", (req, res, next)=>{             // LISTA OS PEDIDOS DO CLIENTE
     const cli = req.params.nomeCli
     knex("clientes")
@@ -82,63 +98,47 @@ server.get("/pedidos/:nomeCli", (req, res, next)=>{             // LISTA OS PEDI
         })
 })
 
-server.get("/produtos/:nomeProd", (req, res, next)=>{       // RETORNA O PRODUTO
-    const prod = req.params.nomeProd
-    knex("produtos")
-        .where("nome", prod)
-        .first()
-        .then((produto)=>{
-            if(!produto){
-                return res.send(new errors.BadRequestError("Produto não encontrado."))
-            }
-            res.send(produto)
-        }, next)
-        .catch((error)=>{
-        res.send({ error : "Erro ao buscar produto." })
-    })
-})
-
 server.post("/cadastro", (req, res, next)=>{                // CADASTRO DE CLIENTE
     knex("clientes")
-    .insert(req.body)
-    .then((resposta)=>{
-        if(!resposta){
-            return res.send(new errors.BadRequestError("Não foi possível realizar o cadastro."))
-        }
-        res.send("Cliente cadastrado com sucesso!")
+        .insert(req.body)
+        .then((resposta)=>{
+            if(!resposta){
+                return res.send(new errors.BadRequestError("Não foi possível realizar o cadastro."))
+            }
+            res.send("Cliente cadastrado com sucesso!")
         }, next)
         .catch((error)=>{
             res.send({ error : "Erro ao cadastrar cliente." })
         })
-    })
+})
     
 server.post("/pedido/cliente", (req, res, next)=>{                // NOVO PEDIDO DE CLIENTE
-        knex("pedidos")
+    knex("pedidos")
         .insert(req.body)
         .then((pedido)=>{
             if(!pedido){
                 return res.send(new errors.BadRequestError("Não foi possível realizar o pedido."))
             }
             res.send("Pedido concluído!")
-            }, next)
-            .catch((error)=>{
-                res.send({ error : "Erro ao adicionar pedido." })
-            })
+        }, next)
+        .catch((error)=>{
+            res.send({ error : "Erro ao adicionar pedido." })
         })
+})
 
 server.put("/clientes/:nomeCli", (req, res, next)=>{                  // ALTERAR DADOS CLIENTE
-    const cli = req.params.nomeCli
+    const cli = req.params.nomeCli  
     knex("clientes")
-    .where("nome", cli)
-    .update(req.body)
-    .then((resposta)=>{
-        if(!resposta){
-            return res.send(new errors.BadRequestError("Não foi possível alterar os dados do cliente."))
-        }
-            if(resposta == 1)
-                res.send("Cliente alterado com sucesso!")
-            else
-                res.send("Erro ao alterar cliente.")
+        .where("nome", cli)
+        .update(req.body)
+        .then((resposta)=>{
+            if(!resposta){
+                return res.send(new errors.BadRequestError("Não foi possível alterar os dados do cliente."))
+            }
+                if(resposta == 1)
+                    res.send("Cliente alterado com sucesso!")
+                else
+                    res.send("Erro ao alterar cliente.")
         }, next)
     })
     
@@ -155,8 +155,8 @@ server.put("/produtos/:nomeProd", (req, res, next)=>{                  // ALTERA
                     res.send("Produto alterado com sucesso!")
                 else
                     res.send("Erro ao alterar produto.")
-            }, next)
-        })
+        }, next)
+})
 
 server.put("/pedidos/:idPed", (req, res, next)=>{                  // ALTERAR DADOS PEDIDO
     const ped = req.params.idPed
@@ -164,60 +164,64 @@ server.put("/pedidos/:idPed", (req, res, next)=>{                  // ALTERAR DA
         .where("id", ped)
         .update(req.body)
         .then((resposta)=>{
-            if(!resposta){
+            if (!resposta) {
                 return res.send(new errors.BadRequestError("Não foi possível alterar os dados do pedido."))
             }
-                if(resposta == 1)
-                    res.send("Pedido alterado com sucesso!")
-                else
-                    res.send("Erro ao alterar pedido.")
-            }, next)
-        })
+            if (resposta == 1) {
+                res.send("Pedido alterado com sucesso!")
+            } else {
+                res.send("Erro ao alterar pedido.")
+            }
+        }, next)
+})
 
 server.del("/clientes/:nomeCli", (req, res, next)=>{             // REMOVE O CLIENTE
-        const cli = req.params.nomeCli
-        knex("clientes")
+    const cli = req.params.nomeCli
+    knex("clientes")
         .where("nome", cli)
         .delete()
         .then((resposta)=>{
-            if(!resposta){
+            if (!resposta) {
                 return res.send(new errors.BadRequestError("O cliente não foi removido."))
             }
-            if(resposta == 1)
+            if (resposta == 1) {
                 res.send("Cliente removido com sucesso!")
-            else
+            } else {
                 res.send("Erro ao remover cliente.")            
-    }, next)
+            }
+        }, next)
 })
 
 server.del("/produtos/:nomeProd", (req, res, next)=>{             // REMOVE O PRODUTO
-        const prod = req.params.nomeProd
-        knex("produtos")
+    const prod = req.params.nomeProd
+    knex("produtos")
         .where("nome", prod)
         .delete()
         .then((resposta)=>{
-            if(!resposta){
+            if (!resposta) {
                 return res.send(new errors.BadRequestError("O produto não foi removido."))
             }
-            if(resposta == 1)
+            if (resposta == 1) {
                 res.send("Produto removido com sucesso!")
-            else
+            } else {
                 res.send("Erro ao remover produto.")            
-    }, next)
+            }
+        }, next)
 })
 
 server.del("/pedidos/:idPed", (req, res, next)=>{             // REMOVE O PEDIDO
-        const ped = req.params.idPed
-        knex("pedidos")
+    const ped = req.params.idPed
+    knex("pedidos")
         .where("id", ped)
         .delete()
         .then((resposta)=>{
-            if(!resposta){
+            if (!resposta) {
                 return res.send(new errors.BadRequestError("O pedido não foi removido."))
             }
-            if(resposta == 1)
+            if (resposta == 1) {
                 res.send("Pedido removido com sucesso!")
-            else
+            } else {
                 res.send("Erro ao remover pedido.")            
-    }, next)
+            }
+        }, next)
 })
