@@ -121,8 +121,8 @@ server.post("/pedido/cliente", (req, res, next)=>{                // NOVO PEDIDO
             }
             res.send("Pedido concluído!")
         }, next)
-        .catch((error)=>{
-            res.send({ error : "Erro ao adicionar pedido." })
+        .catch((err)=>{
+            res.send({ err : "Erro ao adicionar pedido." })
         })
 })
 
