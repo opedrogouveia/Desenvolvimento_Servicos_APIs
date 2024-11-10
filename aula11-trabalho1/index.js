@@ -69,8 +69,8 @@ server.get("/produtos/:nomeProd", (req, res, next)=>{       // RETORNA O PRODUTO
             }
             res.send(produto)
         }, next)
-        .catch((error)=>{
-            res.send({ error : "Erro ao buscar produto." })
+        .catch((err)=>{
+            res.send({ err : "Erro ao buscar produto." })
         })
 })
 
@@ -85,7 +85,6 @@ server.get("/pedidos/:nomeCli", (req, res, next)=>{             // LISTA OS PEDI
             }
             return knex("pedidos")
                 .where("cliente_id", cliente.id)
-                .first()
                 .then((pedido)=>{
                     if (!pedido){
                         return res.send(new errors.BadRequestError("O cliente não realizou nenhum pedido."))
@@ -113,13 +112,47 @@ server.post("/cadastro", (req, res, next)=>{                // CADASTRO DE CLIEN
 })
     
 server.post("/pedido/cliente", (req, res, next)=>{                // NOVO PEDIDO DE CLIENTE
+    const {horario, endereco, cliente_id, produtos} = req.body
     knex("pedidos")
-        .insert(req.body)
-        .then((pedido)=>{
-            if(!pedido){
-                return res.send(new errors.BadRequestError("Não foi possível realizar o pedido."))
-            }
-            res.send("Pedido concluído!")
+        .insert({horario, endereco, cliente_id})
+        .returning("id")
+        .then((result)=>{
+            const pedido_id = result[0].id
+            const produtos_pedido = produtos.map(produto => {
+                return knex("produtos")
+                    .where("id", produto.id)
+                    .first()
+                    .then(result => {
+                        const preco = produto.quantidade * result.preco
+                        return {
+                            pedido_id: pedido_id,
+                            produto_id: produto.id,
+                            quantidade: produto.quantidade,
+                            preco: preco
+                        }
+                    })
+            })
+            Promise.all(produtos_pedido)
+                .then(produtos => {
+                    return knex("pedidos_produtos")
+                        .insert(produtos)
+                        .then(() => {
+                            res.send({
+                                message: "Pedido e produtos adicionados com sucesso!",
+                                pedido: {
+                                    id: pedido_id,
+                                    horario,
+                                    endereco,
+                                    cliente_id
+                                },
+                                produtos: produtos.map(produto => ({
+                                    produto_id: produto.produto_id,
+                                    quantidade: produto.quantidade,
+                                    preco: produto.preco
+                                }))
+                            })
+                        })
+                })
         }, next)
         .catch((err)=>{
             res.send({ err : "Erro ao adicionar pedido." })
@@ -211,17 +244,21 @@ server.del("/produtos/:nomeProd", (req, res, next)=>{             // REMOVE O PR
 
 server.del("/pedidos/:idPed", (req, res, next)=>{             // REMOVE O PEDIDO
     const ped = req.params.idPed
-    knex("pedidos")
-        .where("id", ped)
+    knex('pedidos_produtos')
+        .where('pedido_id', ped)
         .delete()
+        .then(() => {
+            return knex('pedidos')
+                .where('id', ped)
+                .delete()
+        })
         .then((resposta)=>{
             if (!resposta) {
                 return res.send(new errors.BadRequestError("O pedido não foi removido."))
             }
-            if (resposta == 1) {
-                res.send("Pedido removido com sucesso!")
-            } else {
-                res.send("Erro ao remover pedido.")            
-            }
+            res.send("Pedido removido com sucesso!")
         }, next)
+        .catch((err) => {
+            res.send({ err : "Erro ao remover pedido." })
+        })
 })
