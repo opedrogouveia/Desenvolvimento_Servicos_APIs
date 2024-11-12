@@ -61,7 +61,7 @@ server.get("/pedidos", (req, res, next)=>{                 // LISTA OS PEDIDOS
 server.get("/produtos/:nomeProd", (req, res, next)=>{       // RETORNA O PRODUTO
     const prod = req.params.nomeProd
     knex("produtos")
-        .where("nome", prod)
+        .where("nome", "like", `%${prod}%`)
         .first()
         .then((produto)=>{
             if(!produto){
@@ -77,7 +77,7 @@ server.get("/produtos/:nomeProd", (req, res, next)=>{       // RETORNA O PRODUTO
 server.get("/pedidos/:nomeCli", (req, res, next)=>{             // LISTA OS PEDIDOS DO CLIENTE
     const cli = req.params.nomeCli
     knex("clientes")
-        .where("nome", cli)
+        .where("nome", "like", `%${cli}%`)
         .first()
         .then((cliente)=>{
             if (!cliente){
@@ -112,7 +112,10 @@ server.post("/cadastro", (req, res, next)=>{                // CADASTRO DE CLIEN
 })
     
 server.post("/pedido/cliente", (req, res, next)=>{                // NOVO PEDIDO DE CLIENTE
-    const {horario, endereco, cliente_id, produtos} = req.body
+    let {horario, endereco, cliente_id, produtos} = req.body
+    if (!horario || horario.trim() === "") {
+        horario = new Date().toISOString()
+    }
     knex("pedidos")
         .insert({horario, endereco, cliente_id})
         .returning("id")
@@ -123,12 +126,23 @@ server.post("/pedido/cliente", (req, res, next)=>{                // NOVO PEDIDO
                     .where("id", produto.id)
                     .first()
                     .then(result => {
-                        const preco = produto.quantidade * result.preco
+                        if (result.quantidade < produto.quantidade) {
+                            return Promise.reject({
+                                message: `Quantidade insuficiente para o produto ${produto.id}. Estoque disponível: ${result.quantidade}.`
+                            })
+                        }
+                        const preco = parseFloat(result.preco)
+                        if (isNaN(preco)) {
+                            return Promise.reject({
+                                message: `Preço do produto ${produto.id} está inválido.`
+                            });
+                        }
+                        const totalPreco = produto.quantidade * preco
                         return {
                             pedido_id: pedido_id,
                             produto_id: produto.id,
-                            quantidade: produto.quantidade,
-                            preco: preco
+                            quantidade: parseFloat(produto.quantidade),
+                            preco: totalPreco
                         }
                     })
             })
@@ -137,20 +151,28 @@ server.post("/pedido/cliente", (req, res, next)=>{                // NOVO PEDIDO
                     return knex("pedidos_produtos")
                         .insert(produtos)
                         .then(() => {
-                            res.send({
-                                message: "Pedido e produtos adicionados com sucesso!",
-                                pedido: {
-                                    id: pedido_id,
-                                    horario,
-                                    endereco,
-                                    cliente_id
-                                },
-                                produtos: produtos.map(produto => ({
-                                    produto_id: produto.produto_id,
-                                    quantidade: produto.quantidade,
-                                    preco: produto.preco
-                                }))
+                            const estoqueAtualizado = produtos.map(produto => {
+                                return knex("produtos")
+                                    .where("id", produto.produto_id)
+                                    .decrement("quantidade", produto.quantidade)
                             })
+                            return Promise.all(estoqueAtualizado)
+                                .then(() => {
+                                    res.send({
+                                        message: "Pedido e produtos adicionados com sucesso!",
+                                        pedido: {
+                                            id: pedido_id,
+                                            horario,
+                                            endereco,
+                                            cliente_id
+                                        },
+                                        produtos: produtos.map(produto => ({
+                                            produto_id: produto.produto_id,
+                                            quantidade: produto.quantidade,
+                                            preco: produto.preco
+                                        }))
+                                    })
+                                })
                         })
                 })
         }, next)
