@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 11 - Integração</title>
+    <script src="jquery-3.7.1.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body onload="searchProducts()">
+    <label for="txtName">Name</label>
+    <input type="text" id="txtName"/><br>
+    <label for="txtPrice">Price</label>
+    <input type="text" id="txtPrice"/><br>
+    <input type="button" value="add" onclick="add()"/><br>
+
+    <hr>
+
+    <table border="1" id="tblProducts">
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Delete</th>
+        </tr>
+    </table>
+</body>
+</html>
