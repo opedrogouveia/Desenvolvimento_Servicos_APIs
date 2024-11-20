@@ -58,34 +58,34 @@ server.get("/product/:idProd", (req, res, next)=>{
 
 server.post("/product", (req, res, next)=>{
     knex("product")
-    .insert(req.body)
-    .then((data)=>{
-        if(!data){
+        .insert(req.body)
+        .then((data)=>{
+            if(!data){
                 return res.send(new errors.BadRequestError("Product not inserted."))
             }
             res.send(data)
         }, next)
-    })
+})
     
 server.put("/product/:idProd", (req, res, next)=>{
     id = req.params.idProd
     knex("product")
-    .where("id", id)
-    .update(req.body)
-    .then((data)=>{
-        if(!data){
-            return res.send(new errors.BadRequestError("Product not edited."))
-        }
+        .where("id", id)
+        .update(req.body)
+        .then((data)=>{
+            if(!data){
+                return res.send(new errors.BadRequestError("Product not edited."))
+            }
             if(data == 1)
                 res.send("Product edited successfully!")
             else
                 res.send("Error editing!")            
         }, next)
-    })
+})
     
 server.del("/product/:idProd", (req, res, next)=>{
-        id = req.params.idProd
-        knex("product")
+    id = req.params.idProd
+    knex("product")
         .where("id", id)
         .delete()
         .then((data)=>{
@@ -96,14 +96,14 @@ server.del("/product/:idProd", (req, res, next)=>{
                 res.send("Product deleted successfully!")
             else
                 res.send("Error deleting!")            
-    }, next)
+        }, next)
 })
 
 server.get("/client", (req, res, next)=>{
     knex("client")
-    .then((data)=>{
-        res.send(data)
-    }, next)
+        .then((data)=>{
+            res.send(data)
+        }, next)
 })
 
 server.get("/client/:idClient", (req, res, next)=>{
