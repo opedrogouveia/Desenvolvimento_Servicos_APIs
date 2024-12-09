@@ -14,17 +14,21 @@ CREATE TABLE presencas (
     CONSTRAINT fk_aluno FOREIGN KEY (aluno_id) REFERENCES alunos(id)
 );
 
-INSERT INTO alunos (nome, matricula, faltas, situacao) 
+INSERT INTO alunos (nome, matricula) 
 VALUES
-('João Silva', '2023001', 0, 'Cursando'),
-('Maria Souza', '2023002', 0, 'Cursando'),
-('Carlos Oliveira', '2023003', 0, 'Cursando'),
-('Fernanda Santos', '2023004', 0, 'Cursando'),
-('Lucas Pereira', '2023005', 0, 'Cursando');
+('João Silva', '2023001'),
+('Maria Souza', '2023002'),
+('Carlos Oliveira', '2023003'),
+('Fernanda Santos', '2023004'),
+('Lucas Pereira', '2023005');
 
 UPDATE alunos
 SET situacao = 'Cursando';
 
+UPDATE alunos
+SET faltas = 0;
+
+DELETE FROM nome_da_tabela;
 
 -- INSERT INTO presencas (aluno_id, data, estado) 
 -- VALUES
